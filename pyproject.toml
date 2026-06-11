@@ -15,7 +15,10 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = []
+dependencies = [
+    "cjm_plugin_system>=0.0.42",
+    "cjm_context_graph_primitives>=0.0.5",
+]
 
 [project.urls]
 Repository = "https://github.com/cj-mills/cjm-graph-storage-adapter-interface"
@@ -28,6 +31,6 @@ cjm_graph_storage_adapter_interface = "cjm_graph_storage_adapter_interface._modi
 version = {attr = "cjm_graph_storage_adapter_interface.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["cjm_graph_storage_adapter_interface"]
+include = ["cjm_graph_storage_adapter_interface*"]
 
 [tool.nbdev]
