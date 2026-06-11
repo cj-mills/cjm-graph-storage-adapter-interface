@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "cjm-graph-storage-adapter-interface"
+  site-url: "https://cj-mills.github.io/cjm-graph-storage-adapter-interface"
+  description: "Typed graph-storage task adapter interface: the repository-style contract (CRUD, typed query execution, introspection) between graph-storage tool capabilities and the substrate."
+  repo-branch: main
+  repo-url: "https://github.com/cj-mills/cjm-graph-storage-adapter-interface"
