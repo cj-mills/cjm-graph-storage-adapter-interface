@@ -16,8 +16,8 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
-    "cjm_plugin_system>=0.0.43",
-    "cjm_context_graph_primitives>=0.0.7",
+    "cjm_plugin_system>=0.0.44",
+    "cjm_context_graph_primitives>=0.0.8",
 ]
 
 [project.urls]
