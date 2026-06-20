@@ -17,7 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "cjm-substrate>=0.0.50",
-    "cjm_context_graph_primitives>=0.0.10",
+    "cjm_context_graph_primitives>=0.0.11",
 ]
 
 [project.urls]
