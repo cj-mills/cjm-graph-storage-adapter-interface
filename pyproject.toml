@@ -16,7 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
-    "cjm_plugin_system>=0.0.46",
+    "cjm-substrate>=0.0.50",
     "cjm_context_graph_primitives>=0.0.10",
 ]
 

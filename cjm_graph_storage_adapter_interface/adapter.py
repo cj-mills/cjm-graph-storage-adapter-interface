@@ -11,7 +11,7 @@ __all__ = ['GraphStorageToolProtocol', 'GraphStorageAdapter']
 from abc import abstractmethod
 from typing import Any, ClassVar, Dict, List, Optional, Protocol, runtime_checkable
 
-from cjm_plugin_system.core.adapter import TaskAdapter
+from cjm_substrate.core.adapter import TaskAdapter
 
 from cjm_context_graph_primitives.provenance import SourceRef
 from cjm_context_graph_primitives.graph import GraphNode, GraphEdge, GraphContext
