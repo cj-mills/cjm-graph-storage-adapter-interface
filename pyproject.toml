@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "Apache-2.0"}
 authors = [{name = "Christian J. Mills", email = "9126128+cj-mills@users.noreply.github.com"}]
-keywords = ['nbdev']
+keywords = ['graph-storage', 'adapter-interface']
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
@@ -24,13 +24,9 @@ dependencies = [
 Repository = "https://github.com/cj-mills/cjm-graph-storage-adapter-interface"
 Documentation = "https://cj-mills.github.io/cjm-graph-storage-adapter-interface/"
 
-[project.entry-points.nbdev]
-cjm_graph_storage_adapter_interface = "cjm_graph_storage_adapter_interface._modidx:d"
-
 [tool.setuptools.dynamic]
 version = {attr = "cjm_graph_storage_adapter_interface.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["cjm_graph_storage_adapter_interface*"]
 
-[tool.nbdev]
