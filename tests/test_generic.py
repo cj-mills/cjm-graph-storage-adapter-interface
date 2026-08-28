@@ -14,6 +14,7 @@ from cjm_context_graph_primitives.slices import CharSlice
 from cjm_graph_storage_adapter_interface.adapter import GraphStorageToolProtocol
 from cjm_graph_storage_adapter_interface.generic import GenericGraphStorageAdapter
 
+
 class _FakeGraphTool:
     def __init__(self):
         self.nodes: Dict[str, GraphNode] = {}
@@ -108,7 +109,6 @@ class _FakeGraphTool:
 
     def export_graph(self, filter_query=None):
         return GraphContext(nodes=list(self.nodes.values()), edges=list(self.edges.values()))
-
 
 
 def test_generic_adapter_typed_boundary_contract():
