@@ -66,6 +66,11 @@ class GraphStorageToolProtocol(Protocol):
                      merge_strategy: str = "overwrite") -> Dict[str, int]: ...
     def export_graph(self, filter_query: Optional[NodeQuery] = None) -> GraphContext: ...
 
+    # -- ingest provenance: the source HEADs a db was ingested from (DEC a9176261) — about
+    #    the db itself, never a graph fact, so it lives beside the nodes and edges
+    def record_ingest_sources(self, sources: Dict[str, str]) -> int: ...
+    def ingest_sources(self) -> Dict[str, str]: ...
+
 
 class GraphStorageAdapter(TaskAdapter):
     """The graph-storage task adapter — ONE multi-method, repository-style
@@ -245,4 +250,22 @@ class GraphStorageAdapter(TaskAdapter):
         filter_query: Optional[Any] = None,  # NodeQuery (or wire dict) selecting nodes; None = whole graph
     ) -> GraphContext:  # The exported subgraph (matching nodes + edges among them)
         """Export the graph (optionally filtered by a typed node query)."""
+        ...
+
+    # -- ingest provenance (DEC a9176261)
+    @abstractmethod
+    def record_ingest_sources(
+        self,
+        sources: Dict[str, str],  # source id -> the HEAD commit the ingest read
+    ) -> int:  # Sources recorded
+        """Record the source HEADs this db was ingested from, REPLACING any earlier record.
+
+        Written by the rebuild alone, into the fresh db it builds, so the record cannot
+        disagree with the rows it describes at the swap; live writes never touch it. It is
+        the ingest's provenance about the db itself, never a graph fact — so it is not a node."""
+        ...
+
+    @abstractmethod
+    def ingest_sources(self) -> Dict[str, str]:  # source id -> HEAD; {} when the db holds no record
+        """The source HEADs this db was ingested from (rebuild-diff attributes a moved source)."""
         ...

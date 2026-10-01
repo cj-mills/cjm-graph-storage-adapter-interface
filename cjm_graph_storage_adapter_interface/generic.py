@@ -139,3 +139,11 @@ class GenericGraphStorageAdapter(GraphStorageAdapter):
         """Export the graph (optionally filtered by a typed node query)."""
         fq = ensure_node_query(filter_query) if filter_query is not None else None
         return self.tool.export_graph(fq)
+
+    def record_ingest_sources(self, sources: Dict[str, str]) -> int:
+        """Record the source HEADs this db was ingested from (replaces any earlier record)."""
+        return self.tool.record_ingest_sources({str(k): str(v) for k, v in dict(sources).items()})
+
+    def ingest_sources(self) -> Dict[str, str]:
+        """The source HEADs this db was ingested from ({} when it holds no record)."""
+        return self.tool.ingest_sources()

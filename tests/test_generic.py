@@ -110,6 +110,14 @@ class _FakeGraphTool:
     def export_graph(self, filter_query=None):
         return GraphContext(nodes=list(self.nodes.values()), edges=list(self.edges.values()))
 
+    def record_ingest_sources(self, sources):
+        self.seen_types.append(type(sources))
+        self.sources = dict(sources)
+        return len(self.sources)
+
+    def ingest_sources(self):
+        return dict(getattr(self, "sources", {}))
+
 
 def test_generic_adapter_typed_boundary_contract():
     tool = _FakeGraphTool()
@@ -164,3 +172,15 @@ def test_generic_adapter_typed_boundary_contract():
     assert adapter.update_node("n1", {"text": "edited"}) is True
     assert adapter.delete_edges(["e1"]) == 1
     assert adapter.delete_nodes(["n1", "n2"]) == 2
+
+
+def test_generic_adapter_forwards_the_ingest_record():
+    """The ingest record (DEC a9176261) crosses the typed boundary as a plain str -> str map,
+    replacing any earlier record, and reads back whole."""
+    tool = _FakeGraphTool()
+    adapter = GenericGraphStorageAdapter(tool)
+    assert adapter.ingest_sources() == {}
+    assert adapter.record_ingest_sources({"archive:/site/posts": "a" * 40}) == 1
+    assert tool.seen_types[-1] is dict
+    assert adapter.record_ingest_sources({"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}) == 2
+    assert adapter.ingest_sources() == {"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}
