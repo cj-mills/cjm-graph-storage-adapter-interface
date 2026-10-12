@@ -4,7 +4,6 @@ ClassVars are set, and the protocol is runtime-checkable for structural
 isinstance."""
 
 import pytest
-
 from cjm_graph_storage_adapter_interface.adapter import (GraphStorageAdapter,
                                                          GraphStorageToolProtocol)
 
