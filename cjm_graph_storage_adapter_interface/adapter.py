@@ -81,6 +81,9 @@ class GraphStorageToolProtocol(Protocol):
 
     def ingest_sources(self) -> Dict[str, str]: ...
 
+    # -- the instrument's plan guard (design detail 3bd8673d): a typed query's plan, never run
+    def explain_query(self, query: Any) -> Dict[str, Any]: ...
+
 
 class GraphStorageAdapter(TaskAdapter):
     """The graph-storage task adapter — ONE multi-method, repository-style
@@ -278,4 +281,14 @@ class GraphStorageAdapter(TaskAdapter):
     @abstractmethod
     def ingest_sources(self) -> Dict[str, str]:  # source id -> HEAD; {} when the db holds no record
         """The source HEADs this db was ingested from (rebuild-diff attributes a moved source)."""
+        ...
+
+    # -- the instrument's plan guard (design detail 3bd8673d)
+    @abstractmethod
+    def explain_query(
+        self,
+        query: Any,  # NodeQuery / EdgeQuery or either one's tagged wire dict
+    ) -> Dict[str, Any]:  # {plan: [detail, ...], scans: ["nodes" | "edges" | "nodes:label", ...]}
+        """The backend's plan for a typed query, WITHOUT running it: the plan's detail rows and
+        the graph tables it reads whole (`nodes:label` = a label range filtered row by row)."""
         ...

@@ -25,6 +25,7 @@ _No purpose recorded on-graph yet — author it with_ `assert e8507dbf-926d-5169
 - `ensure_edge_query` _function_ — Normalize a tagged wire dict to an `EdgeQuery` (typed values pass through).
 - `ensure_node` _function_ — Normalize a wire dict to a `GraphNode` (typed values pass through).
 - `ensure_node_query` _function_ — Normalize a tagged wire dict to a `NodeQuery` (typed values pass through).
+- `ensure_query` _function_ — Normalize either typed query by its wire tag (`edge_query` is an edge query, anything
 - `ensure_raw_query` _function_ — Normalize a tagged wire dict to a `RawQuery` (typed values pass through).
 - `ensure_source_ref` _function_ — Normalize a wire dict to a `SourceRef` (typed values pass through).
 

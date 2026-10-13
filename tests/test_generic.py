@@ -118,6 +118,10 @@ class _FakeGraphTool:
     def ingest_sources(self):
         return dict(getattr(self, "sources", {}))
 
+    def explain_query(self, query):
+        self.seen_types.append(type(query))
+        return {"plan": ["SCAN n"], "scans": ["nodes"]}
+
 
 def test_generic_adapter_typed_boundary_contract():
     tool = _FakeGraphTool()
@@ -184,3 +188,17 @@ def test_generic_adapter_forwards_the_ingest_record():
     assert tool.seen_types[-1] is dict
     assert adapter.record_ingest_sources({"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}) == 2
     assert adapter.ingest_sources() == {"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}
+
+
+def test_generic_adapter_forwards_explain_typed_by_the_wire_tag():
+    """The plan guard's seam (design detail 3bd8673d): either query's wire dict reaches the tool
+    typed by its tag, and the plan comes back as the tool answered it."""
+    tool = _FakeGraphTool()
+    adapter = GenericGraphStorageAdapter(tool)
+    assert adapter.explain_query(NodeQuery(label="X").to_dict()) == {"plan": ["SCAN n"],
+                                                                     "scans": ["nodes"]}
+    assert tool.seen_types[-1] is NodeQuery
+    adapter.explain_query(EdgeQuery(relation_type="R").to_dict())
+    assert tool.seen_types[-1] is EdgeQuery
+    adapter.explain_query(EdgeQuery())
+    assert tool.seen_types[-1] is EdgeQuery

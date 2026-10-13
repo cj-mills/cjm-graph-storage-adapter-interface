@@ -58,6 +58,16 @@ def ensure_raw_query(
     return value if isinstance(value, RawQuery) else RawQuery.from_dict(value)
 
 
+def ensure_query(
+    value: Any,  # NodeQuery / EdgeQuery or either one's tagged wire dict
+) -> Any:  # The typed query (NodeQuery or EdgeQuery, by its tag)
+    """Normalize either typed query by its wire tag (`edge_query` is an edge query, anything
+    else a node query); typed values pass through."""
+    if isinstance(value, (NodeQuery, EdgeQuery)):
+        return value
+    return ensure_edge_query(value) if value.get("type") == "edge_query" else ensure_node_query(value)
+
+
 class GenericGraphStorageAdapter(GraphStorageAdapter):
     """Generic graph-storage adapter: normalize wire inputs, forward to the
     bound tool, pass typed results through.
@@ -147,3 +157,7 @@ class GenericGraphStorageAdapter(GraphStorageAdapter):
     def ingest_sources(self) -> Dict[str, str]:
         """The source HEADs this db was ingested from ({} when it holds no record)."""
         return self.tool.ingest_sources()
+
+    def explain_query(self, query: Any) -> Dict[str, Any]:
+        """A typed query's plan, never run: {plan, scans} (the instrument's plan guard)."""
+        return self.tool.explain_query(ensure_query(query))
