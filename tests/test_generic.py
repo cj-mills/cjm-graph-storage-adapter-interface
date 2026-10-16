@@ -118,6 +118,14 @@ class _FakeGraphTool:
     def ingest_sources(self):
         return dict(getattr(self, "sources", {}))
 
+    def record_journal_cursor(self, family, position):
+        self.seen_types.append(type(position))
+        self.cursors = {**getattr(self, "cursors", {}), family: dict(position)}
+        return True
+
+    def journal_cursors(self):
+        return dict(getattr(self, "cursors", {}))
+
     def explain_query(self, query):
         self.seen_types.append(type(query))
         return {"plan": ["SCAN n"], "scans": ["nodes"]}
@@ -188,6 +196,21 @@ def test_generic_adapter_forwards_the_ingest_record():
     assert tool.seen_types[-1] is dict
     assert adapter.record_ingest_sources({"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}) == 2
     assert adapter.ingest_sources() == {"repo:/r/x": "b" * 40, "repo:/r/y": "c" * 40}
+
+
+def test_generic_adapter_forwards_the_applied_cursors():
+    """The applied cursors (design detail 65f4a6c9) cross the typed boundary as plain dicts, one
+    per journal family, a later record replacing that family's cursor."""
+    tool = _FakeGraphTool()
+    adapter = GenericGraphStorageAdapter(tool)
+    assert adapter.journal_cursors() == {}
+    first = {"segment": 1, "offset": 120, "ordinal": 2, "digest": "a" * 64}
+    later = {"segment": 2, "offset": 40, "ordinal": 5, "digest": "b" * 64}
+    assert adapter.record_journal_cursor("w.writes.jsonl", first) is True
+    assert tool.seen_types[-1] is dict
+    adapter.record_journal_cursor("w.memory.jsonl", first)
+    adapter.record_journal_cursor("w.writes.jsonl", later)
+    assert adapter.journal_cursors() == {"w.memory.jsonl": first, "w.writes.jsonl": later}
 
 
 def test_generic_adapter_forwards_explain_typed_by_the_wire_tag():

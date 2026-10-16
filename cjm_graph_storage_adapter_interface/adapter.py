@@ -81,6 +81,12 @@ class GraphStorageToolProtocol(Protocol):
 
     def ingest_sources(self) -> Dict[str, str]: ...
 
+    # -- the applied cursors (design detail 65f4a6c9): how far into each journal family the db
+    #    has applied — about the db itself, beside the nodes and edges like the ingest record
+    def record_journal_cursor(self, family: str, position: Dict[str, Any]) -> bool: ...
+
+    def journal_cursors(self) -> Dict[str, Dict[str, Any]]: ...
+
     # -- the instrument's plan guard (design detail 3bd8673d): a typed query's plan, never run
     def explain_query(self, query: Any) -> Dict[str, Any]: ...
 
@@ -281,6 +287,24 @@ class GraphStorageAdapter(TaskAdapter):
     @abstractmethod
     def ingest_sources(self) -> Dict[str, str]:  # source id -> HEAD; {} when the db holds no record
         """The source HEADs this db was ingested from (rebuild-diff attributes a moved source)."""
+        ...
+
+    # -- the applied cursors (design detail 65f4a6c9)
+    @abstractmethod
+    def record_journal_cursor(
+        self,
+        family: str,               # The journal family (its live tail's file name)
+        position: Dict[str, Any],  # {segment, offset, ordinal, digest}: just past the last record applied
+    ) -> bool:  # True once recorded
+        """Record how far into one journal family this db has applied, REPLACING that family's
+        earlier cursor. A writer advances it after each apply (append, then apply, then advance)
+        and a rebuild stamps it at its close; a writer that finds it behind the journal applies
+        the tail first. About the db itself, never a graph fact — so it is not a node."""
+        ...
+
+    @abstractmethod
+    def journal_cursors(self) -> Dict[str, Dict[str, Any]]:  # family -> {segment, offset, ordinal, digest}; {} when none
+        """This db's applied cursors, one per journal family."""
         ...
 
     # -- the instrument's plan guard (design detail 3bd8673d)

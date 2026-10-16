@@ -158,6 +158,14 @@ class GenericGraphStorageAdapter(GraphStorageAdapter):
         """The source HEADs this db was ingested from ({} when it holds no record)."""
         return self.tool.ingest_sources()
 
+    def record_journal_cursor(self, family: str, position: Dict[str, Any]) -> bool:
+        """Record how far into one journal family this db has applied (replaces that family's cursor)."""
+        return self.tool.record_journal_cursor(str(family), dict(position))
+
+    def journal_cursors(self) -> Dict[str, Dict[str, Any]]:
+        """This db's applied cursors, one per journal family ({} when it holds none)."""
+        return self.tool.journal_cursors()
+
     def explain_query(self, query: Any) -> Dict[str, Any]:
         """A typed query's plan, never run: {plan, scans} (the instrument's plan guard)."""
         return self.tool.explain_query(ensure_query(query))
